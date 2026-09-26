@@ -231,6 +231,11 @@ impl PeerState {
     }
 
     #[doc(hidden)]
+    pub fn announced_catalogue_fingerprint(&self) -> Option<[u8; 32]> {
+        self.announced_catalogue_fingerprint
+    }
+
+    #[doc(hidden)]
     pub fn needs_catalogue_snapshot(&self, fingerprint: [u8; 32]) -> bool {
         self.announced_catalogue_fingerprint != Some(fingerprint)
     }
