@@ -289,7 +289,7 @@ where
                 .expect("checked alongside compiler-owned covered input source");
             return Ok(ResolvedSource {
                 stored_column_ids: self.stored_column_ids_for_read_table(request, &table)?,
-                table_schema: table,
+                table_schema: table.into(),
                 graph: input_source.clone(),
                 row_shape: SourceRowShape {
                     source: request.source.clone(),
@@ -425,7 +425,7 @@ where
             .map_err(|_| source_resolution_error(request, SourceGap::Coverage))?;
             return Ok(ResolvedSource {
                 stored_column_ids: self.stored_column_ids_for_read_table(request, &table)?,
-                table_schema: table,
+                table_schema: table.into(),
                 graph,
                 row_shape: SourceRowShape {
                     source: request.source.clone(),
@@ -561,7 +561,7 @@ where
                 .map_err(|_| source_resolution_error(request, SourceGap::Coverage))?;
                 return Ok(ResolvedSource {
                     stored_column_ids: self.stored_column_ids_for_read_table(request, &table)?,
-                    table_schema: table.clone(),
+                    table_schema: table.clone().into(),
                     graph,
                     row_shape: SourceRowShape {
                         source: request.source.clone(),
@@ -715,7 +715,7 @@ where
                 .map_err(|error| source_resolution_error_from_policy_proof(request, error))?;
                 return Ok(ResolvedSource {
                     stored_column_ids: self.stored_column_ids_for_read_table(request, &table)?,
-                    table_schema: table.clone(),
+                    table_schema: table.clone().into(),
                     graph,
                     row_shape: SourceRowShape {
                         source: request.source.clone(),
@@ -933,7 +933,7 @@ where
                 };
                 return Ok(ResolvedSource {
                     stored_column_ids: self.stored_column_ids_for_read_table(request, &table)?,
-                    table_schema: table.clone(),
+                    table_schema: table.clone().into(),
                     graph,
                     row_shape: SourceRowShape {
                         source: request.source.clone(),
@@ -1751,7 +1751,7 @@ where
         };
         Ok(ResolvedSource {
             stored_column_ids: self.stored_column_ids_for_read_table(request, &table)?,
-            table_schema: table,
+            table_schema: table.into(),
             graph,
             row_shape: SourceRowShape {
                 source: request.source.clone(),
@@ -1851,7 +1851,7 @@ where
             .await?;
         Ok(ResolvedSource {
             stored_column_ids: self.stored_column_ids_for_read_table(request, &table)?,
-            table_schema: table,
+            table_schema: table.into(),
             graph,
             row_shape: SourceRowShape {
                 source: request.source.clone(),
@@ -2014,7 +2014,7 @@ where
             .await?;
         Ok(ResolvedSource {
             stored_column_ids: self.stored_column_ids_for_read_table(request, &table)?,
-            table_schema: table,
+            table_schema: table.into(),
             graph,
             row_shape: SourceRowShape {
                 source: request.source.clone(),
@@ -2094,7 +2094,7 @@ where
         .map_err(|_| source_resolution_error(request, SourceGap::Coverage))?;
         Ok(ResolvedSource {
             stored_column_ids: self.stored_column_ids_for_read_table(request, &table)?,
-            table_schema: table,
+            table_schema: table.into(),
             graph,
             row_shape: SourceRowShape {
                 source: request.source.clone(),
