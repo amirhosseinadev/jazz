@@ -272,7 +272,8 @@ type NativeDb = {
   admitLocalFirstSession?(token: string, appId: string, claimedAuthor: string): void;
   setSessionClaims?(claims: Record<string, unknown> | undefined | null): void | Promise<void>;
   setIdentityClaims?(author: Uint8Array, claims: Record<string, unknown> | undefined | null): void;
-  foregroundTxTimeHighWater?(): bigint;
+  /** Native bindings answer synchronously; the browser binding resolves on the event loop. */
+  foregroundTxTimeHighWater?(): bigint | Promise<bigint>;
   seedForegroundTxTimeHighWater?(highWater: bigint): void;
   subscribe?(
     query: Uint8Array,
@@ -1019,7 +1020,7 @@ export class NativeRuntimeAdapter implements Runtime {
   }
 
   /** @internal Return the native HLC high-water for a foreground lease handoff. */
-  foregroundTxTimeHighWater(): bigint {
+  foregroundTxTimeHighWater(): bigint | Promise<bigint> {
     if (this !== this.ownerRuntime) return this.ownerRuntime.foregroundTxTimeHighWater();
     if (!this.db.foregroundTxTimeHighWater) {
       throw new Error("Native runtime does not expose foreground transaction high-water");
@@ -1052,7 +1053,7 @@ export class NativeRuntimeAdapter implements Runtime {
     await Promise.all(this.pendingStreamingMutations);
     await Promise.all(this.pendingLocalSettlements);
     await this.coreOperation?.completion.catch(() => undefined);
-    return this.foregroundTxTimeHighWater();
+    return await this.foregroundTxTimeHighWater();
   }
 
   /** @internal Seed a foreground lease high-water before the first local write. */
