@@ -7,15 +7,17 @@
 //! path. Application integration tests in crates/jazz/tests use JazzServer.
 #![cfg(feature = "testing")]
 
+use crate::model::public_api::{
+    policy::PolicyExpr,
+    types::{ColumnType, SchemaBuilder, TablePolicies, TableSchemaBuilder},
+};
 use crate::{
-    block_on,
-    db::{Node, Transport},
+    db::{Node, Transport, block_on},
     groove::{records::Value, storage::MemoryStorage},
     ids::{AuthorSubject, NodeUuid},
     node::{CommitUnitTrust, NodeState},
     protocol::{CatalogueSnapshot, LensOp, MigrationLens, SchemaVersion, SyncMessage, TableLens},
     schema::JazzSchema,
-    tools::{ColumnType, PolicyExpr, SchemaBuilder, TablePolicies, TableSchemaBuilder},
     wire::TransportError,
 };
 use std::{
@@ -74,7 +76,7 @@ fn schema(extra: bool, allowed: bool) -> JazzSchema {
     .unwrap()
 }
 
-fn open(schema: JazzSchema, id: u8) -> Node<MemoryStorage> {
+fn open(schema: JazzSchema, id: u8) -> Node<crate::groove::storage::BoxedStorage> {
     let families = schema.column_families();
     let refs = families.iter().map(String::as_str).collect::<Vec<_>>();
     Node::new(
@@ -87,7 +89,7 @@ fn open(schema: JazzSchema, id: u8) -> Node<MemoryStorage> {
     )
 }
 
-fn apply(node: &Node<MemoryStorage>, message: SyncMessage) {
+fn apply(node: &Node<crate::groove::storage::BoxedStorage>, message: SyncMessage) {
     let state = node.node();
     block_on(async {
         let mut state = state.lock().await;
