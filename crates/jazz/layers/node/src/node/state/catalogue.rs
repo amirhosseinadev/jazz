@@ -1292,11 +1292,16 @@ self.database.finish_persistence(persisted)?;
             .catalogue
             .schema_version_aliases
             .get(&schema_version_id)
+            .copied()
         {
-            if schema_version_id == self.catalogue.local_schema_version_id {
-                self.catalogue.local_schema_version_alias = Some(*alias);
+            // Write only a changed alias: any mutable catalogue access discards
+            // the announced catalogue fingerprint, and this runs for every write.
+            if schema_version_id == self.catalogue.local_schema_version_id
+                && self.catalogue.local_schema_version_alias != Some(alias)
+            {
+                self.catalogue.local_schema_version_alias = Some(alias);
             }
-            return Ok(*alias);
+            return Ok(alias);
         }
         self.ensure_provisional_physical_mapping(schema_version_id)
             .await?;

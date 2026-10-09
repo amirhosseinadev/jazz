@@ -242,6 +242,11 @@ impl PeerState {
     }
 
     #[doc(hidden)]
+    pub fn announced_catalogue_fingerprint(&self) -> Option<[u8; 32]> {
+        self.announced_catalogue_fingerprint
+    }
+
+    #[doc(hidden)]
     pub fn needs_catalogue_snapshot(&self, fingerprint: [u8; 32]) -> bool {
         self.announced_catalogue_fingerprint != Some(fingerprint)
     }
@@ -1508,7 +1513,7 @@ impl PeerState {
             .publication_states
             .get(&subscription)
             .and_then(|state| state.maintained_subscription_view.as_ref())
-            .map(|maintained| maintained.tables.clone())
+            .map(|maintained| std::sync::Arc::clone(&maintained.tables))
             .unwrap_or_default();
         let maintained_source_authority_result = self
             .publication_states
@@ -1882,7 +1887,7 @@ impl PeerState {
                 subscription: receiver,
                 maintained,
                 terminal_schemas,
-                tables,
+                tables: std::sync::Arc::new(tables),
                 covered_input_receiver,
                 result_schema_version: shape.schema_version(),
                 source_authority_result: source_authority_result_key.clone(),
@@ -2077,7 +2082,7 @@ impl PeerState {
             subscription: receiver,
             maintained,
             terminal_schemas,
-            tables,
+            tables: std::sync::Arc::new(tables),
             covered_input_receiver,
             result_schema_version: shape.schema_version(),
             source_authority_result: source_authority_result_key,
